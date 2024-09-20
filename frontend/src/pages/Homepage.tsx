@@ -8,6 +8,11 @@ interface DeckListProps {
     decks: Deck[];
 }
 
+interface DeckDialogProps {
+    opened: boolean;
+    close: () => void;
+}
+
 export const Homepage = () => {
     const [decks, setDecks] = useState<Deck[]>([]);
     const [opened, { toggle, close }] = useDisclosure(false);
@@ -31,13 +36,7 @@ export const Homepage = () => {
                 <Title order={2}>decks</Title>
                 <Button onClick={toggle}>new</Button>
             </Flex>
-
-            <Dialog position={{ top: 60, right: 250 }} opened={opened} withCloseButton onClose={close}>
-                <Group>
-                    <TextInput style={{ width: '75%' }} placeholder="new deck name" />
-                    <ActionIcon variant="filled" aria-label="Settings"><IoAdd /></ActionIcon>
-                </Group>
-            </Dialog>
+            <DeckDialog opened={opened} close={close} />
             <DeckList decks={decks} />
         </Container >
     )
@@ -52,3 +51,29 @@ const DeckList: React.FC<DeckListProps> = ({ decks }) => (
         ))}
     </List>
 )
+
+const DeckDialog: React.FC<DeckDialogProps> = ({ opened, close }) => {
+    const [deckName, setDeckName] = useState<string>("");
+    const [error, setError] = useState<string>("");
+
+    const handleAddDeck = () => {
+        if (!deckName.trim()) {
+            setError("Deck name is required.")
+        }
+        else {
+            console.log("New deck", deckName)
+            setDeckName("")
+            setError("")
+            close()
+        }
+    }
+
+    return (
+        <Dialog position={{ top: 60, right: 250 }} opened={opened} withCloseButton onClose={close}>
+            <Group>
+                <TextInput style={{ width: '75%' }} placeholder="new deck name" onChange={(e) => setDeckName(e.target.value)} error={error ? error : null} />
+                <ActionIcon onClick={handleAddDeck} variant="filled" aria-label="Add deck"><IoAdd /></ActionIcon>
+            </Group>
+        </Dialog>
+    )
+}
