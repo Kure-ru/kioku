@@ -1,6 +1,7 @@
 import { Button, Container, Divider, Flex, Text } from "@mantine/core"
 
 const CardPage = () => {
+
     return (
         <Container>
             <Text>Question</Text>
