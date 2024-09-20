@@ -6,9 +6,24 @@ from flashcards.models import Card, Deck
 class CardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Card
-        fields = ['question', 'answer', 'creation_date', 'reviewed_date', 'deck', 'score']
+        fields = ['id', 'question', 'answer', 'creation_date', 'reviewed_date', 'deck', 'score']
 
 class DeckSerializer(serializers.ModelSerializer):
     class Meta:
         model = Deck
-        fields = ['name']
+        fields = ['id', 'name']
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email']
+
+class RegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password']
+        extra_kwargs = {'password': {'write_only': True}}
+    
+    def create(self, validated_data):
+        user = User.objects.create_user(validated_data['username'], validated_data['email'], validated_data['password'])
+        return user
