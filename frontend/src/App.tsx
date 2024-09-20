@@ -3,6 +3,7 @@ import { Homepage } from './pages/Homepage.tsx';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import DeckPage from "./pages/DeckPage.tsx";
 import CardPage from "./pages/CardPage.tsx";
+import LoginPage from "./pages/LoginPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -16,7 +17,11 @@ const router = createBrowserRouter([
   {
     path: "/cards",
     element: <CardPage />
-  }
+  },
+  {
+    path: "/login",
+    element: <LoginPage />
+  },
 ])
 
 function App() {
