@@ -12,10 +12,7 @@ interface DeckListProps {
 interface DeckDialogProps {
     opened: boolean;
     close: () => void;
-    onDeckAdded: (deck: Deck) => void;
 }
-
-
 
 export const Homepage = () => {
     const [decks, setDecks] = useState<Deck[]>([]);
@@ -44,11 +41,8 @@ export const Homepage = () => {
 
     useEffect(() => {
         fetchDecks();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    const handleDeckAdded = (newDeck: Deck) => {
-        setDecks((prevDecks) => [...prevDecks, newDeck]);
-    }
 
     return (
         <Container>
@@ -56,7 +50,7 @@ export const Homepage = () => {
                 <Title order={2}>decks</Title>
                 <Button onClick={toggle}>new</Button>
             </Flex>
-            <DeckDialog opened={opened} close={close} onDeckAdded={handleDeckAdded} />
+            <DeckDialog opened={opened} close={close} />
             <DeckList decks={decks} />
         </Container >
     )
@@ -72,9 +66,10 @@ const DeckList: React.FC<DeckListProps> = ({ decks }) => (
     </List>
 )
 
-const DeckDialog: React.FC<DeckDialogProps> = ({ opened, close, onDeckAdded }) => {
+const DeckDialog: React.FC<DeckDialogProps> = ({ opened, close }) => {
     const [deckName, setDeckName] = useState<string>("");
     const [error, setError] = useState<string>("");
+    const navigate = useNavigate();
 
     const handleAddDeck = async () => {
         if (!deckName.trim()) {
@@ -96,12 +91,8 @@ const DeckDialog: React.FC<DeckDialogProps> = ({ opened, close, onDeckAdded }) =
                     setError("Deck name is required.")
                     throw new Error('Failed to create new deck.');
                 }
-
                 const newDeck = await response.json();
-                onDeckAdded(newDeck);
-                setDeckName("")
-                setError("")
-                close()
+                navigate(`/decks/${newDeck.id}`);
             } catch (error) {
                 console.error('Error when creating the deck', error);
                 setError('Failed to create deck, please try again.');
