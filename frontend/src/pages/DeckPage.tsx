@@ -6,7 +6,6 @@ import { useNavigate, useParams } from "react-router-dom";
 const DeckPage = () => {
     const navigate = useNavigate();
     const { id } = useParams();
-    console.log(id)
 
     const [deck, setDeck] = useState<Deck>();
 
@@ -49,7 +48,7 @@ const DeckPage = () => {
                 direction="row"
                 wrap="wrap">
                 <Button>add new card</Button>
-                <Button component="a" href="/cards">study</Button>
+                <Button component="a" href={`/deck/${id}/cards`}>study</Button>
             </Flex>
         </Container>
     )

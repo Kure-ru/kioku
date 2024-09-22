@@ -15,7 +15,7 @@ const router = createBrowserRouter([
     element: <DeckPage />
   },
   {
-    path: "/cards",
+    path: "/deck/:id/cards",
     element: <CardPage />
   },
   {
