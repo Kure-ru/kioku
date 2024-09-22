@@ -1,21 +1,38 @@
 import { Button, Container, Flex, Paper, Title } from "@mantine/core"
 import { Deck } from "../Types";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const DeckPage = () => {
-
+    const navigate = useNavigate();
     const { id } = useParams();
     console.log(id)
 
     const [deck, setDeck] = useState<Deck>();
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:8000/decks/${id}`)
-            .then(response => response.json())
-            .then(data => setDeck(data))
-            .catch(error => console.error('Error when fetching the decks', error))
-    }, []);
+
+        const fetchDeck = async () => {
+            const token = localStorage.getItem('accessToken');
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/decks/${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    }
+                })
+                if (response.status === 401) {
+                    navigate('/login')
+                    return;
+                }
+                const data = await response.json();
+                setDeck(data);
+            } catch (error) {
+                console.error('Error when fetching the decks', error)
+            }
+        }
+        fetchDeck();
+    }, [id, navigate]);
 
     if (!deck) return <div>Deck not found</div>
 

@@ -1,7 +1,16 @@
 import { Group, Title, Text, Button, TextInput, Stack, PasswordInput } from "@mantine/core"
 import { useForm } from "@mantine/form";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+interface formValues {
+    username: string;
+    password: string;
+}
 
 const LoginPage = () => {
+    const navigate = useNavigate();
+    const [error, setError] = useState<string>('');
 
     const form = useForm({
         mode: 'uncontrolled',
@@ -11,7 +20,7 @@ const LoginPage = () => {
         },
     });
 
-    const handleSubmit = async (values) => {
+    const handleSubmit = async (values: formValues) => {
         try {
             const response = await fetch('http://127.0.0.1:8000/api/login/', {
                 method: 'POST',
@@ -22,13 +31,17 @@ const LoginPage = () => {
             })
 
             if (!response.ok) {
+                setError('Login failed.')
                 throw new Error('Login failed');
             }
 
             const data = await response.json();
-            console.log('login successful', data)
+            localStorage.setItem('accessToken', data.access);
+            localStorage.setItem('refreshToken', data.refresh);
+            navigate('/');
         } catch (error) {
-            console.error('Error', error);
+            console.error('Error', error)
+            setError('Login failed, Please check your credentials.')
         }
     }
 
@@ -47,13 +60,13 @@ const LoginPage = () => {
 
                 <PasswordInput
                     label="Password"
-                    placeholder="*******"
                     key={form.key('password')}
                     {...form.getInputProps('password')}
                 />
                 <Group justify="flex-end" mt="md">
                     <Button type="submit">Submit</Button>
                 </Group>
+                {error && <Text c="red">{error}</Text>}
             </form>
         </Stack>
     )
