@@ -1,4 +1,4 @@
-from rest_framework import permissions, viewsets, status
+from rest_framework import permissions, viewsets, status, generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
@@ -14,6 +14,17 @@ class CardViewSet(viewsets.ModelViewSet):
     queryset = Card.objects.all().order_by('creation_date')
     serializer_class = CardSerializer
     permission_classes = [IsAuthenticated]
+
+class CardsByDeckView(generics.ListAPIView):
+    """
+    API endpoint that allows retrieving all cards for a specific deck.
+    """
+    serializer_class = CardSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        deck_id = self.kwargs['deck_id']
+        return Card.objects.filter(deck_id=deck_id)
 
 class DeckViewSet(viewsets.ModelViewSet):
     """
