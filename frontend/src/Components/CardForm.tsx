@@ -2,21 +2,27 @@ import { TextInput, Group, Button, Text, Notification } from "@mantine/core"
 import { useForm } from "@mantine/form";
 import { useState } from "react";
 
-interface formValues {
+interface FormValues {
     question: string;
     answer: string;
 }
 
-const CardForm = ({ id }: { id: number }) => {
+interface CardFormProps {
+    id: number;
+    card?: { question: string; answer: string; id: number };
+    closeModal?: () => void;
+}
+
+const CardForm = ({ id, card, closeModal }: CardFormProps) => {
     const [error, setError] = useState<string>('');
     const [showNotification, setShowNotification] = useState<boolean>(false);
-    const [submittedValues, setSubmittedValues] = useState<formValues | null>(null);
+    const [submittedValues, setSubmittedValues] = useState<FormValues | null>(null);
 
     const form = useForm({
         mode: 'uncontrolled',
         initialValues: {
-            question: '',
-            answer: '',
+            question: card ? card.question : '',
+            answer: card ? card.answer : '',
         },
         validate: {
             question: (value) => value.length < 2
@@ -28,12 +34,14 @@ const CardForm = ({ id }: { id: number }) => {
         }
     });
 
-    const handleSubmit = async (values: formValues) => {
+    const handleSubmit = async (values: FormValues) => {
         try {
             const token = localStorage.getItem('accessToken');
             const payload = { ...values, deck: id };
-            const response = await fetch(`http://127.0.0.1:8000/cards/`, {
-                method: 'POST',
+            const method = card ? 'PUT' : 'POST';
+            const url = card ? `http://127.0.0.1:8000/cards/${card.id}/` : 'http://127.0.0.1:8000/cards/';
+            const response = await fetch(url, {
+                method,
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
@@ -42,22 +50,24 @@ const CardForm = ({ id }: { id: number }) => {
             })
 
             if (!response.ok) {
-                setError('Could not add card.')
-                throw new Error('Could not add card.');
+                setError('Could not save card.')
+                throw new Error('Could not save card.');
             }
 
             const data = await response.json();
             setSubmittedValues(data)
             form.reset();
             setShowNotification(true);
-
-            setTimeout(() => {
-                setShowNotification(false)
-            }, 1000);
-
+            if (closeModal) {
+                closeModal();
+            } else {
+                setTimeout(() => {
+                    setShowNotification(false)
+                }, 1000);
+            }
         } catch (error) {
             console.error('Error', error)
-            setError('Could not add card. Try again later.')
+            setError('Could not save card. Try again later.')
         }
     }
     return (
@@ -82,7 +92,7 @@ const CardForm = ({ id }: { id: number }) => {
                 {error && <Text c="red">{error}</Text>}
             </form>
             {showNotification &&
-                <Notification loading onClose={() => setShowNotification(false)} title="Card successfully added">
+                <Notification loading onClose={() => setShowNotification(false)} title="Card successfully saved:">
                     {submittedValues?.question}
                 </Notification>
             }
