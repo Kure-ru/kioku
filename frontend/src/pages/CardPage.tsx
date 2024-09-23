@@ -1,9 +1,10 @@
-import { ActionIcon, Button, Container, Divider, Flex, Modal, Paper, Text, Notification } from "@mantine/core"
+import { ActionIcon, Button, Container, Divider, Flex, Modal, Paper, Text, Notification, Title, Stack } from "@mantine/core"
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { IoSettingsSharp } from "react-icons/io5";
 import { useDisclosure } from "@mantine/hooks";
 import CardForm from "../Components/CardForm";
+import { Deck } from "../Types";
 
 interface Card {
     answer: string;
@@ -17,40 +18,54 @@ interface Card {
 
 const CardPage = () => {
     const [cards, setCards] = useState<Card[]>([]);
+    const [deck, setDeck] = useState<Deck | null>(null);
     const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
-    const navigate = useNavigate();
-    const { id } = useParams();
-    const [opened, { open, close }] = useDisclosure(false);
     const [notification, setNotification] = useState<{ message: string; color: string } | null>(null);
+    const [showAnswer, setShowAnswer] = useState<boolean>(false);
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const [opened, { open, close }] = useDisclosure(false);
 
-    const nextCard = () => setCurrentCardIndex((prevIndex) => (prevIndex + 1) % cards.length);
-
-    const fetchCards = async () => {
-        try {
+    useEffect(() => {
+        const fetchData = async () => {
             const token = localStorage.getItem('accessToken');
-            const response = await fetch(`http://127.0.0.1:8000/api/decks/${id}/cards/`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
+            try {
+                const cardResponse = await fetch(`http://127.0.0.1:8000/api/decks/${id}/cards/`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    }
+                });
+
+                if (cardResponse.status === 401) {
+                    navigate('/login')
                 }
-            });
-            if (response.status === 401) {
-                navigate('/login')
-                return;
+
+                const cardsData = await cardResponse.json();
+                setCards(cardsData);
+
+                const deckResponse = await fetch(`http://127.0.0.1:8000/decks/${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    }
+                });
+
+                const deckData = await deckResponse.json();
+                setDeck(deckData);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                setNotification({ message: 'Error fetching data.', color: 'red' });
             }
-            const data = await response.json();
-            setCards(data);
-        } catch (error) {
-            console.error('Error fetching cards:', error);
-            setNotification({ message: 'Error fetching cards.', color: 'red' });
         }
-    }
+        fetchData();
+    }, [id, navigate])
+
 
     const handleDelete = async () => {
+        const token = localStorage.getItem('accessToken');
+        const cardToDelete = cards[currentCardIndex];
         try {
-            const token = localStorage.getItem('accessToken');
-            const cardToDelete = cards[currentCardIndex];
-
             const response = await fetch(`http://127.0.0.1:8000/cards/${cardToDelete.id}/`, {
                 method: 'DELETE',
                 headers: {
@@ -71,21 +86,21 @@ const CardPage = () => {
         }
     }
 
-    useEffect(() => {
-        fetchCards();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    const nextCard = () => {
+        setCurrentCardIndex((prevIndex) => (prevIndex + 1) % cards.length);
+        setShowAnswer(false);
+    }
 
-
-    if (cards.length > 0) {
+    if (deck && cards.length > 0) {
         return (
-            <>
-                <Flex>
-                    <Container>
+            <Container>
+                <Link style={{ textDecoration: 'none' }} to={`/deck/${deck.id}`}><Title order={3}>{deck.name}</Title></Link>
+                <Flex my={40}>
+                    <Stack >
                         <Text>{cards[currentCardIndex].question}</Text>
-                        <Divider my="lg" />
-                        <Text>{cards[currentCardIndex].answer}</Text>
-                        <Button>show answer</Button>
+                        <Divider my="lg" label={<Button onClick={() => setShowAnswer(true)}>show answer</Button>}
+                        />
+                        {showAnswer && <Text>{cards[currentCardIndex].answer}</Text>}
                         <Flex mih={50}
                             gap="md"
                             justify="center"
@@ -97,13 +112,12 @@ const CardPage = () => {
                             <Button onClick={nextCard}>good</Button>
                             <Button onClick={nextCard}>very good</Button>
                         </Flex>
-                    </Container>
+                    </Stack>
                     <ActionIcon onClick={open} variant="filled" aria-label="Card settings"><IoSettingsSharp /></ActionIcon>
                     <Modal opened={opened} onClose={close} title="Cards settings">
                         <CardForm id={Number(id)} card={cards[currentCardIndex]} closeModal={close} />
                         <Button onClick={handleDelete} color="red">Delete card</Button>
                     </Modal>
-
                 </Flex>
                 {notification &&
                     <Notification
@@ -115,7 +129,7 @@ const CardPage = () => {
                         {notification.message}
                     </Notification>
                 }
-            </>
+            </Container>
         )
     } else {
         return (
