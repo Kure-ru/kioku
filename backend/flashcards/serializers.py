@@ -9,9 +9,13 @@ class CardSerializer(serializers.ModelSerializer):
         fields = ['id', 'question', 'answer', 'creation_date', 'reviewed_date', 'deck', 'score']
 
 class DeckSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = Deck
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'user']
+    
+    def create(self, validated_data):
+        return Deck.objects.create(**validated_data)
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

@@ -1,4 +1,4 @@
-import { Anchor, AppShell, Flex, Title } from "@mantine/core"
+import { Anchor, AppShell, Button, Flex, Title } from "@mantine/core"
 import { Homepage } from './pages/Homepage.tsx';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import DeckPage from "./pages/DeckPage.tsx";
@@ -41,7 +41,7 @@ function App() {
       <AppShell.Header>
         <Flex gap={30} align="center">
           <Anchor href="/"><Title order={1}>kioku</Title></Anchor>
-          <Anchor href="/decks">decks</Anchor>
+          <Button>logout</Button>
         </Flex>
       </AppShell.Header>
       <AppShell.Main>

@@ -30,9 +30,14 @@ class DeckViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows decks to be viewed or edited.
     """
-    queryset = Deck.objects.all().order_by('name')
     serializer_class = DeckSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Deck.objects.filter(user=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 class UserViewSet(viewsets.ModelViewSet):
     """

@@ -1,7 +1,7 @@
 import { Group, Title, Text, Button, TextInput, Stack, PasswordInput } from "@mantine/core"
 import { useForm } from "@mantine/form";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface formValues {
     username: string;
@@ -68,6 +68,7 @@ const LoginPage = () => {
                 </Group>
                 {error && <Text c="red">{error}</Text>}
             </form>
+            <Text>Don't have an account? <Link to={'/signup'}>Signup</Link></Text>
         </Stack>
     )
 }

@@ -1,8 +1,11 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 
 class Deck(models.Model):
     name = models.CharField(max_length=45, unique=True, blank=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    
     def __str__(self):
         return self.name
 

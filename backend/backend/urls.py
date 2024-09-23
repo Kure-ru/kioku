@@ -7,7 +7,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 router = routers.DefaultRouter()
 router.register(r'cards', views.CardViewSet)
-router.register(r'decks', views.DeckViewSet)
+router.register(r'decks', views.DeckViewSet, basename='deck')
 router.register(r'users', views.UserViewSet)
 
 urlpatterns = [
