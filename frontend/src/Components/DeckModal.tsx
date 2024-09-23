@@ -1,6 +1,6 @@
 import { Group, TextInput, ActionIcon, Modal, Button } from "@mantine/core";
 import { useState, ChangeEvent, useEffect } from "react";
-import { IoAdd } from "react-icons/io5";
+import { IoCheckmark } from "react-icons/io5";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Deck } from "../Types";
 
@@ -92,7 +92,7 @@ const DeckModal: React.FC<DeckModalProps> = ({ opened, close, deck }) => {
             <Group>
                 <TextInput value={deckName} style={{ width: '75%' }} placeholder={deck?.name || "Deck name"} onChange={(e) => handleChange(e)} error={error ? error : null}
                 />
-                <ActionIcon onClick={handleSaveDeck} variant="filled" aria-label="Submit deck name"><IoAdd /></ActionIcon>
+                <ActionIcon onClick={handleSaveDeck} variant="filled" aria-label="Submit deck name"><IoCheckmark /></ActionIcon>
             </Group>
             {deck && (
                 <Button onClick={handleDelete} color="red">Delete deck</Button>

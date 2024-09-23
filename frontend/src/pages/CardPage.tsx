@@ -30,37 +30,36 @@ const CardPage = () => {
         const fetchData = async () => {
             const token = localStorage.getItem('accessToken');
             try {
-                const cardResponse = await fetch(`http://127.0.0.1:8000/api/decks/${id}/cards/`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    }
-                });
+                const [cardsResponse, deckResponse] = await Promise.all([
+                    fetch(`http://127.0.0.1:8000/api/decks/${id}/cards/`, {
+                        method: 'GET',
+                        headers: { 'Authorization': `Bearer ${token}` },
+                    }),
+                    fetch(`http://127.0.0.1:8000/decks/${id}`, {
+                        method: 'GET',
+                        headers: { 'Authorization': `Bearer ${token}` },
+                    }),
+                ]);
 
-                if (cardResponse.status === 401) {
-                    navigate('/login')
-                }
+                if (!cardsResponse.ok || !deckResponse.ok) throw new Error('Failed to fetch data.')
 
-                const cardsData = await cardResponse.json();
-                setCards(cardsData);
-
-                const deckResponse = await fetch(`http://127.0.0.1:8000/decks/${id}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    }
-                });
-
+                const cardsData = await cardsResponse.json();
                 const deckData = await deckResponse.json();
+
+                setCards(cardsData);
                 setDeck(deckData);
             } catch (error) {
                 console.error('Error fetching data:', error);
-                setNotification({ message: 'Error fetching data.', color: 'red' });
+                handleError(error as Error);
             }
         }
         fetchData();
     }, [id, navigate])
 
+    const handleError = (error: Error) => {
+        console.error(error);
+        setNotification({ message: error.message, color: 'red' });
+    }
 
     const handleDelete = async () => {
         const token = localStorage.getItem('accessToken');
@@ -82,7 +81,7 @@ const CardPage = () => {
             close();
         } catch (error) {
             console.error('Error deleting card:', error);
-            setNotification({ message: 'Error deleting card. Please try again.', color: 'red' });
+            handleError(error as Error);
         }
     }
 
@@ -90,11 +89,10 @@ const CardPage = () => {
         setCurrentCardIndex((prevIndex) => (prevIndex + 1) % cards.length);
         setShowAnswer(false);
     }
-
-    if (deck && cards.length > 0) {
-        return (
-            <Container>
-                <Link style={{ textDecoration: 'none' }} to={`/deck/${deck.id}`}><Title order={3}>{deck.name}</Title></Link>
+    return (
+        <Container>
+            <Link style={{ textDecoration: 'none' }} to={`/deck/${deck?.id}`}><Title order={3}>{deck?.name}</Title></Link>
+            {cards.length > 0 ? (
                 <Flex my={40}>
                     <Stack >
                         <Text>{cards[currentCardIndex].question}</Text>
@@ -119,25 +117,24 @@ const CardPage = () => {
                         <Button onClick={handleDelete} color="red">Delete card</Button>
                     </Modal>
                 </Flex>
-                {notification &&
-                    <Notification
-                        mt={64}
-                        color={notification.color}
-                        onClose={() => setNotification(null)}
-                        title="Notification"
-                    >
-                        {notification.message}
-                    </Notification>
-                }
-            </Container>
-        )
-    } else {
-        return (
-            <Paper>
-                <Text>No cards available.</Text>
-            </Paper>
-        )
-    }
+            ) : (
+                <Paper>
+                    <Text>No cards available.</Text>
+                    <Button component="a" href={`/deck/${id}/new`}>Add new card</Button>
+                </Paper>
+            )}
+            {notification &&
+                <Notification
+                    mt={64}
+                    color={notification.color}
+                    onClose={() => setNotification(null)}
+                    title="Notification"
+                >
+                    {notification.message}
+                </Notification>
+            }
+        </Container>
+    )
 }
 
 export default CardPage
