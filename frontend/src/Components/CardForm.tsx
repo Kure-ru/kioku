@@ -1,6 +1,7 @@
 import { TextInput, Group, Button, Text, Notification } from "@mantine/core"
 import { useForm } from "@mantine/form";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface FormValues {
     question: string;
@@ -14,6 +15,7 @@ interface CardFormProps {
 }
 
 const CardForm = ({ id, card, closeModal }: CardFormProps) => {
+    const navigate = useNavigate();
     const [error, setError] = useState<string>('');
     const [showNotification, setShowNotification] = useState<boolean>(false);
     const [submittedValues, setSubmittedValues] = useState<FormValues | null>(null);
@@ -88,6 +90,7 @@ const CardForm = ({ id, card, closeModal }: CardFormProps) => {
                 />
                 <Group justify="flex-end" mt="md">
                     <Button type="submit">Submit</Button>
+                    {!closeModal && <Button type="reset" onClick={() => navigate(-1)}>Cancel</Button>}
                 </Group>
                 {error && <Text c="red">{error}</Text>}
             </form>
