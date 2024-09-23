@@ -2,6 +2,13 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import CardForm from '../Components/CardForm';
 import '@testing-library/jest-dom';
 import TestWrapper from './utils';
+import { useNavigate } from 'react-router-dom';
+
+jest.mock('react-router-dom', () => ({
+    useNavigate: jest.fn(),
+}));
+
+const mockNavigate = jest.fn();
 
 describe('CardForm', () => {
     beforeEach(() => {
@@ -12,6 +19,7 @@ describe('CardForm', () => {
         jest.spyOn(Storage.prototype, 'getItem').mockReturnValue('mockToken');
         // Mock fetch
         global.fetch = jest.fn();
+        (useNavigate as jest.Mock).mockReturnValue(mockNavigate);
     });
 
     test("renders the form with initial values for a new card", () => {

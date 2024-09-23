@@ -95,7 +95,7 @@ const DeckModal: React.FC<DeckModalProps> = ({ opened, close, deck }) => {
                 <ActionIcon onClick={handleSaveDeck} variant="filled" aria-label="Submit deck name"><IoCheckmark /></ActionIcon>
             </Group>
             {deck && (
-                <Button onClick={handleDelete} color="red">Delete deck</Button>
+                <Button onClick={handleDelete} aria-label="Delete deck" color="red">Delete deck</Button>
             )
             }
         </Modal>
