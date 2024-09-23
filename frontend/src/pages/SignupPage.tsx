@@ -8,7 +8,7 @@ interface formValues {
     password: string;
 }
 
-const LoginPage = () => {
+const SignupPage = () => {
     const navigate = useNavigate();
     const [error, setError] = useState<string>('');
 
@@ -16,13 +16,37 @@ const LoginPage = () => {
         mode: 'uncontrolled',
         initialValues: {
             username: '',
+            email: '',
             password: '',
+            confirmPassword: '',
         },
+        validate: {
+            email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+            password: (value) => {
+                if (value.length < 8) {
+                    return 'Password must be at least 8 characters long';
+                }
+                if (!/[A-Z]/.test(value)) {
+                    return 'Password must contain at least one uppercase letter';
+                }
+                if (!/[a-z]/.test(value)) {
+                    return 'Password must contain at least one lowercase letter';
+                }
+                if (!/[0-9]/.test(value)) {
+                    return 'Password must contain at least one number';
+                }
+                if (!/[!@#$%^&*]/.test(value)) {
+                    return 'Password must contain at least one special character';
+                }
+                return null;
+            },
+            confirmPassword: (value, values) => value !== values.password ? 'Passwords did not match' : null,
+        }
     });
 
     const handleSubmit = async (values: formValues) => {
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/login/', {
+            const response = await fetch('http://127.0.0.1:8000/api/register/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -31,8 +55,8 @@ const LoginPage = () => {
             })
 
             if (!response.ok) {
-                setError('Login failed.')
-                throw new Error('Login failed');
+                setError('Signup failed.')
+                throw new Error('Signup failed');
             }
 
             const data = await response.json();
@@ -41,13 +65,13 @@ const LoginPage = () => {
             navigate('/');
         } catch (error) {
             console.error('Error', error)
-            setError('Login failed, Please check your credentials.')
+            setError('Signup failed, Please check your credentials.')
         }
     }
 
     return (
         <Stack>
-            <Title>Sign in</Title>
+            <Title>Signup</Title>
             <Text>Start learning now</Text>
 
             <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
@@ -57,20 +81,32 @@ const LoginPage = () => {
                     key={form.key('username')}
                     {...form.getInputProps('username')}
                 />
+                <TextInput
+                    withAsterisk
+                    label="Email"
+                    key={form.key('email')}
+                    {...form.getInputProps('email')}
+                />
 
                 <PasswordInput
                     label="Password"
                     key={form.key('password')}
                     {...form.getInputProps('password')}
                 />
+
+                <PasswordInput
+                    label="Confirm password"
+                    key={form.key('confirmPassword')}
+                    {...form.getInputProps('confirmPassword')}
+                />
                 <Group justify="flex-end" mt="md">
                     <Button type="submit">Submit</Button>
                 </Group>
                 {error && <Text c="red">{error}</Text>}
             </form>
-            <Text>Don't have an account? <Link to={'/signup'}>Signup</Link></Text>
+            <Text>Already have an account? <Link to={'/login'}>Login</Link></Text>
         </Stack>
     )
 }
 
-export default LoginPage
+export default SignupPage;

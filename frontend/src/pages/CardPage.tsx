@@ -77,7 +77,11 @@ const CardPage = () => {
             }
 
             setCards((prevCards) => prevCards.filter((card) => card.id !== cardToDelete.id));
-            setCurrentCardIndex((prevIndex) => (prevIndex === prevIndex - 1 ? prevIndex - 1 : prevIndex));
+            setCurrentCardIndex((prevIndex) => {
+                if (cards.length === 1) return 0;
+                return prevIndex === prevIndex - 1 ? prevIndex - 1 : prevIndex;
+            });
+
             close();
         } catch (error) {
             console.error('Error deleting card:', error);
