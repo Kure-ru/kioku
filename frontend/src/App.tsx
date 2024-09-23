@@ -5,6 +5,7 @@ import DeckPage from "./pages/DeckPage.tsx";
 import CardPage from "./pages/CardPage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import AddCardPage from "./pages/AddCardPage.tsx";
+import SignupPage from "./pages/SignupPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -16,16 +17,20 @@ const router = createBrowserRouter([
     element: <DeckPage />,
   },
   {
-    path: "/deck/:id/new",
+    path: "new",
     element: <AddCardPage />
   },
   {
-    path: "/deck/:id/cards",
+    path: "cards",
     element: <CardPage />,
   },
   {
     path: "/login",
     element: <LoginPage />
+  },
+  {
+    path: "/signup",
+    element: <SignupPage />
   },
 ])
 
