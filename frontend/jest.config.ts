@@ -8,7 +8,8 @@ export default {
         }],
     },
     moduleNameMapper: {
-        '\\.(gif|ttf|eot|svg|png)$': '<rootDir>/test/__ mocks __/fileMock.js',
+        '\\.(gif|ttf|eot|svg|png)$': '<rootDir>/tests/__ mocks __/fileMock.js',
     },
-    setupFilesAfterEnv: ['<rootDir>/test/__ mocks __/matchMedia.ts'],
+    setupFiles: ['<rootDir>/jest.setup.js'],
+    setupFilesAfterEnv: ['<rootDir>/tests/__ mocks __/matchMedia.ts'],
 }

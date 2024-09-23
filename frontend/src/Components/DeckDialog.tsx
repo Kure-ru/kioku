@@ -34,7 +34,7 @@ const DeckDialog: React.FC<DeckDialogProps> = ({ opened, close }) => {
                     throw new Error('Failed to create new deck.');
                 }
                 const newDeck = await response.json();
-                navigate(`/decks/${newDeck.id}`);
+                navigate(`/deck/${newDeck.id}`);
             } catch (error) {
                 console.error('Error when creating the deck', error);
                 setError('Failed to create deck, please try again.');

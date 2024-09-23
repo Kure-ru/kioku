@@ -48,7 +48,7 @@ test("calls navigate with new deck ID on successful creation", async () => {
     fireEvent.click(screen.getByLabelText(/Add deck/i));
 
     await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith("/decks/1");
+        expect(mockNavigate).toHaveBeenCalledWith("/deck/1");
     });
 });
 
