@@ -9,7 +9,7 @@ class Deck(models.Model):
 class Card(models.Model):
     question = models.CharField(max_length=200, unique=True, blank=False)
     answer = models.CharField(max_length=200, blank=False)
-    creation_date = models.DateTimeField(auto_created=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
     reviewed_date = models.DateTimeField(null=True, blank=True)
     deck = models.ForeignKey(Deck, on_delete=models.CASCADE)
     score = models.IntegerField(default=0)
