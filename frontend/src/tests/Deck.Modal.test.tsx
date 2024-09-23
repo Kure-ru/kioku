@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import DeckDialog from '../Components/DeckDialog';
+import DeckModal from '../Components/DeckModal';
 import '@testing-library/jest-dom';
 import TestWrapper from './utils';
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +14,7 @@ const mockNavigate = jest.fn();
 beforeEach(() => {
     render(
         <TestWrapper>
-            <DeckDialog opened={true} close={mockClose} />
+            <DeckModal opened={true} close={mockClose} />
         </TestWrapper>
     );
 

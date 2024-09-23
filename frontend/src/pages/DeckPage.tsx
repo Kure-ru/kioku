@@ -1,16 +1,19 @@
-import { Button, Container, Flex, Paper, Title } from "@mantine/core"
+import { ActionIcon, Button, Container, Flex, Paper, Title } from "@mantine/core"
 import { Deck } from "../Types";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { IoSettingsSharp } from "react-icons/io5";
+import { useDisclosure } from "@mantine/hooks";
+import DeckDialog from "../Components/DeckModal";
 
 const DeckPage = () => {
+    const [opened, { open, close }] = useDisclosure(false);
     const navigate = useNavigate();
     const { id } = useParams();
 
     const [deck, setDeck] = useState<Deck>();
 
     useEffect(() => {
-
         const fetchDeck = async () => {
             const token = localStorage.getItem('accessToken');
             try {
@@ -37,6 +40,7 @@ const DeckPage = () => {
 
     return (
         <Container>
+            <ActionIcon variant="filled" aria-label="Deck settings" onClick={open}><IoSettingsSharp /></ActionIcon>
             <Paper m={32} shadow="xs" withBorder p="xl">
                 <Title order={3} >{deck.name}</Title>
                 Deck information
@@ -50,6 +54,7 @@ const DeckPage = () => {
                 <Button component="a" href={`/deck/${id}/new`}>add new card</Button>
                 <Button component="a" href={`/deck/${id}/cards`}>study</Button>
             </Flex>
+            <DeckDialog opened={opened} close={close} deck={deck} />
         </Container>
     )
 }
