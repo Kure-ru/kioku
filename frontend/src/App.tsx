@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import DeckPage from "./pages/DeckPage.tsx";
 import CardPage from "./pages/CardPage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
+import AddCardPage from "./pages/AddCardPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -11,12 +12,16 @@ const router = createBrowserRouter([
     element: <Homepage />
   },
   {
-    path: "/decks/:id",
-    element: <DeckPage />
+    path: "/deck/:id",
+    element: <DeckPage />,
+  },
+  {
+    path: "/deck/:id/new",
+    element: <AddCardPage />
   },
   {
     path: "/deck/:id/cards",
-    element: <CardPage />
+    element: <CardPage />,
   },
   {
     path: "/login",

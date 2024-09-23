@@ -55,7 +55,7 @@ const DeckList: React.FC<DeckListProps> = ({ decks }) => (
     <List withPadding>
         {decks.map(deck => (
             <List.Item py={8} key={deck.id}>
-                <Anchor href={`/decks/${deck.id}`}>{deck.name}</Anchor>
+                <Anchor href={`/deck/${deck.id}`}>{deck.name}</Anchor>
             </List.Item>
         ))}
     </List>

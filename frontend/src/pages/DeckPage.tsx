@@ -47,7 +47,7 @@ const DeckPage = () => {
                 align="flex-start"
                 direction="row"
                 wrap="wrap">
-                <Button>add new card</Button>
+                <Button component="a" href={`/deck/${id}/new`}>add new card</Button>
                 <Button component="a" href={`/deck/${id}/cards`}>study</Button>
             </Flex>
         </Container>
