@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage.tsx";
 import AddCardPage from "./pages/AddCardPage.tsx";
 import SignupPage from "./pages/SignupPage.tsx";
 import Layout from './Components/AppLayout.tsx';
+import BrowsePage from './pages/BrowsePage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -18,6 +19,7 @@ const router = createBrowserRouter([
       { path: 'deck/:id/cards', element: <CardPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
+      { path: 'browse', element: <BrowsePage /> },
     ],
   },
 ]);

@@ -1,7 +1,8 @@
 import { TextInput, Group, Button, Text, Notification } from "@mantine/core"
 import { useForm } from "@mantine/form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Card } from "../Types";
 
 interface FormValues {
     question: string;
@@ -12,9 +13,10 @@ interface CardFormProps {
     id: number;
     card?: { question: string; answer: string; id: number };
     closeModal?: () => void;
+    onUpdate?: (updatedCard: Card) => void;
 }
 
-const CardForm = ({ id, card, closeModal }: CardFormProps) => {
+const CardForm = ({ id, card, closeModal, onUpdate }: CardFormProps) => {
     const navigate = useNavigate();
     const [error, setError] = useState<string>('');
     const [showNotification, setShowNotification] = useState<boolean>(false);
@@ -23,8 +25,8 @@ const CardForm = ({ id, card, closeModal }: CardFormProps) => {
     const form = useForm({
         mode: 'uncontrolled',
         initialValues: {
-            question: card ? card.question : '',
-            answer: card ? card.answer : '',
+            question: '',
+            answer: '',
         },
         validate: {
             question: (value) => value.length < 2
@@ -35,6 +37,15 @@ const CardForm = ({ id, card, closeModal }: CardFormProps) => {
                 : null,
         }
     });
+
+    useEffect(() => {
+        if (card) {
+            form.setValues({
+                question: card.question,
+                answer: card.answer,
+            });
+        }
+    }, [card]);
 
     const handleSubmit = async (values: FormValues) => {
         try {
@@ -60,9 +71,9 @@ const CardForm = ({ id, card, closeModal }: CardFormProps) => {
             setSubmittedValues(data)
             form.reset();
             setShowNotification(true);
-            if (closeModal) {
-                closeModal();
-            } else {
+            if (onUpdate) onUpdate(data);
+            if (closeModal) closeModal();
+            else {
                 setTimeout(() => {
                     setShowNotification(false)
                 }, 1000);
