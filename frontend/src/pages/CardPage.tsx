@@ -4,17 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { IoSettingsSharp } from "react-icons/io5";
 import { useDisclosure } from "@mantine/hooks";
 import CardForm from "../Components/CardForm";
-import { Deck } from "../Types";
-
-interface Card {
-    answer: string;
-    creation_date: Date;
-    deck: number;
-    id: number;
-    question: string;
-    reviewed_date: Date | null;
-    score: number;
-}
+import { Card, Deck } from "../Types";
 
 const CardPage = () => {
     const [cards, setCards] = useState<Card[]>([]);
