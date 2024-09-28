@@ -17,5 +17,6 @@ urlpatterns = [
     path('api/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/register/', views.RegisterView.as_view(), name='register'),
-    path('api/decks/<int:deck_id>/cards/', views.CardsByDeckView.as_view(), name='deck-cards')
+    path('api/decks/<int:deck_id>/cards/', views.CardsByDeckView.as_view(), name='deck-cards'),
+    path('api/cards/<int:pk>/answer/', views.CardViewSet.as_view({'post': 'answer_card'}), name='card-answer'),
 ]
