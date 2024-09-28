@@ -21,7 +21,7 @@ const CardPage = () => {
             const token = localStorage.getItem('accessToken');
             try {
                 const [cardsResponse, deckResponse] = await Promise.all([
-                    fetch(`http://127.0.0.1:8000/api/decks/${id}/cards/`, {
+                    fetch(`http://127.0.0.1:8000/api/decks/${id}/cards/?review=true`, {
                         method: 'GET',
                         headers: { 'Authorization': `Bearer ${token}` },
                     }),
@@ -79,10 +79,43 @@ const CardPage = () => {
         }
     }
 
-    const nextCard = () => {
-        setCurrentCardIndex((prevIndex) => (prevIndex + 1) % cards.length);
-        setShowAnswer(false);
+    const handleCardAnswer = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        const rating = e.currentTarget.textContent;
+        const token = localStorage.getItem('accessToken');
+
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/cards/${cards[currentCardIndex].id}/answer/`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ easiness: rating }),
+            });
+
+            if (!response.ok) throw new Error('Failed to submit answer.');
+
+            const updatedCard = await response.json();
+            console.log(updatedCard);
+
+            setCurrentCardIndex((prevIndex) => {
+                const nextIndex = prevIndex + 1;
+                if (nextIndex < cards.length) {
+                    return nextIndex;
+                } else {
+                    return cards.length;
+                }
+            });
+            setShowAnswer(false);
+        } catch (error) {
+            console.error('Error answering the card:', error);
+        }
+    };
+
+    if (currentCardIndex >= cards.length) {
+        return <Text>No more cards available. You've completed this deck!</Text>
     }
+
     return (
         <Container>
             <Link style={{ textDecoration: 'none' }} to={`/deck/${deck?.id}`}><Title order={3}>{deck?.name}</Title></Link>
@@ -99,10 +132,10 @@ const CardPage = () => {
                             align="flex-start"
                             direction="row"
                             wrap="wrap">
-                            <Button onClick={nextCard}>again</Button>
-                            <Button onClick={nextCard}>hard</Button>
-                            <Button onClick={nextCard}>good</Button>
-                            <Button onClick={nextCard}>very good</Button>
+                            <Button onClick={handleCardAnswer}>again</Button>
+                            <Button onClick={handleCardAnswer}>hard</Button>
+                            <Button onClick={handleCardAnswer}>good</Button>
+                            <Button onClick={handleCardAnswer}>easy</Button>
                         </Flex>
                     </Stack>
                     <ActionIcon onClick={open} variant="filled" aria-label="Card settings"><IoSettingsSharp /></ActionIcon>
