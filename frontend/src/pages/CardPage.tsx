@@ -51,34 +51,6 @@ const CardPage = () => {
         setNotification({ message: error.message, color: 'red' });
     }
 
-    const handleDelete = async () => {
-        const token = localStorage.getItem('accessToken');
-        const cardToDelete = cards[currentCardIndex];
-        try {
-            const response = await fetch(`http://127.0.0.1:8000/cards/${cardToDelete.id}/`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Could not delete card.');
-            }
-
-            setCards((prevCards) => prevCards.filter((card) => card.id !== cardToDelete.id));
-            setCurrentCardIndex((prevIndex) => {
-                if (cards.length === 1) return 0;
-                return prevIndex === prevIndex - 1 ? prevIndex - 1 : prevIndex;
-            });
-
-            close();
-        } catch (error) {
-            console.error('Error deleting card:', error);
-            handleError(error as Error);
-        }
-    }
-
     const handleCardAnswer = async (e: React.MouseEvent<HTMLButtonElement>) => {
         const rating = e.currentTarget.textContent;
         const token = localStorage.getItem('accessToken');
@@ -141,7 +113,6 @@ const CardPage = () => {
                     <ActionIcon onClick={open} variant="filled" aria-label="Card settings"><IoSettingsSharp /></ActionIcon>
                     <Modal opened={opened} onClose={close} title="Cards settings">
                         <CardForm id={Number(id)} card={cards[currentCardIndex]} closeModal={close} />
-                        <Button onClick={handleDelete} color="red">Delete card</Button>
                     </Modal>
                 </Flex>
             ) : (

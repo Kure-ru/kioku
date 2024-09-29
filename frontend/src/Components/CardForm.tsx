@@ -83,6 +83,27 @@ const CardForm = ({ id, card, closeModal, onUpdate }: CardFormProps) => {
             setError('Could not save card. Try again later.')
         }
     }
+
+    const handleDelete = async () => {
+        const token = localStorage.getItem('accessToken');
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/cards/${card?.id}/`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Could not delete card.');
+            }
+
+            navigate(0);
+        } catch (error) {
+            console.error('Error deleting card:', error);
+        }
+    }
+
     return (
         <>
             <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
@@ -100,6 +121,7 @@ const CardForm = ({ id, card, closeModal, onUpdate }: CardFormProps) => {
                     {...form.getInputProps('answer')}
                 />
                 <Group justify="flex-end" mt="md">
+                    {card && <Button onClick={handleDelete} color="red">Delete card</Button>}
                     <Button type="submit">Submit</Button>
                     {!closeModal && <Button type="reset" onClick={() => navigate(-1)}>Cancel</Button>}
                 </Group>
