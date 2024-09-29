@@ -4,7 +4,7 @@ from django.utils import timezone
 from datetime import timedelta
 
 class Deck(models.Model):
-    name = models.CharField(max_length=45, unique=True, blank=False)
+    name = models.CharField(max_length=45, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     
     def __str__(self):
