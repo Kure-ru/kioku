@@ -12,6 +12,7 @@ const DeckList: React.FC<DeckListProps> = ({ decks }) => {
 
     return (
         <SimpleGrid
+            style={{ alignSelf: 'center' }}
             cols={{ base: 1, sm: 2, lg: 5 }}
             spacing={{ base: 10, sm: 'xl' }}
             verticalSpacing={{ base: 'md', sm: 'xl' }}>
