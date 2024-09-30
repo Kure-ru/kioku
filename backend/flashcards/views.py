@@ -37,6 +37,23 @@ class CardViewSet(viewsets.ModelViewSet):
             return Response(CardSerializer(updated_card).data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def create(self, request, *args, **kwargs):
+        """
+        Handle both single and bulk creation of cards.
+        """
+        if isinstance(request.data, list):
+            cards = []
+            for card_data in request.data:
+                serializer = CardSerializer(data=card_data)
+                if serializer.is_valid():
+                    self.perform_create(serializer)
+                    cards.append(serializer.data)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'success': 'Cards created successfully'}, status=status.HTTP_201_CREATED)
+        else: # Single card
+            return super().create(request, *args, **kwargs) 
+
 class CardsByDeckView(generics.ListAPIView):
     """
     API endpoint that allows retrieving all cards for a specific deck.
