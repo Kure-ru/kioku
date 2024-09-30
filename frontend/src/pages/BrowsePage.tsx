@@ -95,15 +95,12 @@ const BrowsePage = () => {
 
     const formatDate = (dateString: Date) => {
         const date = new Date(dateString);
-        return new Intl.DateTimeFormat("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: 'numeric',
-            minute: 'numeric',
-        }).format(date);
+        const yearMonthDay = date.toISOString().slice(0, 10);
+        const hours = String(date.getHours()).padStart(2, '0')
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${yearMonthDay} ${hours}:${minutes}`;
     };
-
+    console.log(cards)
     const getDeckNameById = (deckId: number): string => {
         const deck = decks?.find((deck) => deck.id === deckId);
         return deck ? deck.name : "Unknown deck";
@@ -144,6 +141,7 @@ const BrowsePage = () => {
         <Table.Tr key={card.id} onClick={() => handleRowClick(card)} style={{ cursor: "pointer" }}>
             <Table.Td>{card.question}</Table.Td>
             <Table.Td>{getDeckNameById(card.deck)}</Table.Td>
+            <Table.Td>{formatDate(card.next_review_date)}</Table.Td>
             <Table.Td>{formatDate(card.creation_date)}</Table.Td>
         </Table.Tr>
     ));
@@ -170,6 +168,9 @@ const BrowsePage = () => {
                                 <Th sorted={sortBy === 'deck'} reversed={reverseSortDirection} onSort={() => setSorting('deck')}>
                                     Deck
                                 </Th>
+                                <Th sorted={sortBy === 'next_review_date'} reversed={reverseSortDirection} onSort={() => setSorting('next_review_date')}>
+                                    Due
+                                </Th>
                                 <Th sorted={sortBy === 'creation_date'} reversed={reverseSortDirection} onSort={() => setSorting('creation_date')}>
                                     Created
                                 </Th>
@@ -177,7 +178,7 @@ const BrowsePage = () => {
                         </Table.Thead>
                         <Table.Tbody>{rows}</Table.Tbody>
                     </Table>
-                    <Pagination onChange={setCurrentPage} value={currentPage} total={totalPages} withEdges />
+                    <Pagination pt='8' onChange={setCurrentPage} value={currentPage} total={totalPages} withEdges />
                 </ScrollArea>
             </Grid.Col>
             <Grid.Col span={5}>

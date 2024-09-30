@@ -6,7 +6,7 @@ from flashcards.models import Card, Deck
 class CardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Card
-        fields = ['id', 'question', 'answer', 'creation_date', 'reviewed_date', 'deck', 'needs_review']
+        fields = ['id', 'question', 'answer', 'creation_date', 'reviewed_date', 'deck', 'needs_review', 'next_review_date']
 
 class AnswerCardSerializer(serializers.Serializer):
     easiness = serializers.ChoiceField(choices=['easy', 'good', 'hard', 'again'])

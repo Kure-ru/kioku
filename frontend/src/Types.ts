@@ -10,5 +10,6 @@ export type Card = {
     id: number;
     question: string;
     reviewed_date: Date | null;
-    score: number;
+    next_review_date: Date;
+
 }
