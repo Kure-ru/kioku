@@ -1,17 +1,18 @@
-import { Container, Title, Flex, Button } from "@mantine/core"
+import { Container, Title, Text, Flex, Button, Card, useMantineTheme } from "@mantine/core"
 import { useEffect, useState } from "react";
 import { Deck } from "../Types";
 import { useDisclosure } from "@mantine/hooks";
 import { useNavigate } from "react-router-dom";
 import DeckDialog from "../Components/DeckModal";
 import DeckList from "../Components/DeckList";
-
+import CsvUpload from "../Components/CsvUpload";
 
 export const Homepage = () => {
     const [decks, setDecks] = useState<Deck[]>([]);
     const [opened, { toggle, close }] = useDisclosure(false);
+    const [showUploader, setShowUploader] = useState<boolean>(false);
     const navigate = useNavigate();
-
+    const theme = useMantineTheme();
 
     useEffect(() => {
         const fetchDecks = async () => {
@@ -38,12 +39,25 @@ export const Homepage = () => {
 
     return (
         <Container>
-            <Flex gap={16}>
-                <Title order={2}>decks</Title>
-                <Button onClick={toggle}>new</Button>
-            </Flex>
+            <Title order={2}>start studying</Title>
             <DeckDialog opened={opened} close={close} />
-            <DeckList decks={decks} />
+            <Card m={32} withBorder radius="md" style={{
+                borderColor: theme.colors.indigo[1],
+                backgroundColor: theme.colors.indigo[0],
+                color: theme.colors.indigo[9],
+            }}>
+                <Text style={{ fontWeight: 700 }} pb={16}>Decks</Text>
+                <DeckList decks={decks} />
+                <Flex pt={24} gap={16} justify="flex-end">
+                    <Button onClick={toggle}>add new deck</Button>
+                    <Button onClick={() => setShowUploader(prev => !prev)}>
+                        {showUploader
+                            ? "hide import"
+                            : "import CSV file"
+                        }</Button>
+                </Flex>
+            </Card>
+            {showUploader && <CsvUpload />}
         </Container >
     )
 }
