@@ -41,19 +41,21 @@ export const Homepage = () => {
         <Container>
             <Title order={2}>start studying</Title>
             <DeckDialog opened={opened} close={close} />
-            <Card m={32} withBorder radius="md" style={{
+            <Card my={32} radius="md" style={{
                 borderColor: theme.colors.indigo[1],
-                backgroundColor: theme.colors.indigo[0],
+                background: `linear-gradient(135deg, rgba(237,242,255,1) 4%, rgba(229,153,247,1) 35%, rgba(186,200,255,1) 51%, rgba(237,242,255,1) 97%), rgb(237,242,255)`,
                 color: theme.colors.indigo[9],
-            }}>
+                justifyContent: "space-between",
+                minHeight: '50vh'
+            }} >
                 <Text style={{ fontWeight: 700 }} pb={16}>Decks</Text>
                 <DeckList decks={decks} />
                 <Flex pt={24} gap={16} justify="flex-end">
-                    <Button onClick={toggle}>add new deck</Button>
+                    <Button onClick={toggle}>new deck</Button>
                     <Button onClick={() => setShowUploader(prev => !prev)}>
                         {showUploader
-                            ? "hide import"
-                            : "import CSV file"
+                            ? "close"
+                            : "CSV file"
                         }</Button>
                 </Flex>
             </Card>

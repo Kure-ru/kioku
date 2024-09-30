@@ -113,7 +113,6 @@ const CsvUpload = () => {
                 maxSize={5 * 1024 ** 2}
                 accept={[MIME_TYPES.csv]}
                 multiple={false}
-                mx={32}
             >
                 <Group justify="center" gap="xl" mih={220} style={{ pointerEvents: 'none' }}>
                     <Dropzone.Accept>
