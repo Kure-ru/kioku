@@ -14,15 +14,7 @@ class AnswerCardSerializer(serializers.Serializer):
     def update(self, instance, validated_data):
         easiness_rating = validated_data['easiness']
     
-        rating_map = {
-            'easy': 3,
-            'good': 2,
-            'hard': 1,
-            'again': 0
-        }
-
-        easiness_value = rating_map[easiness_rating]
-        instance.answer_card(easiness_value)
+        instance.answer_card(easiness_rating)
         instance.save()
         return instance
 

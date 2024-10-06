@@ -19,6 +19,7 @@ class Card(models.Model):
     next_review_date = models.DateTimeField(null=True, blank=True)
     easiness_factor = models.FloatField(default=2.5)
     interval = models.IntegerField(default=1)
+    repetitions = models.IntegerField(default=0) 
     deck = models.ForeignKey(Deck, on_delete=models.CASCADE)
     
     def __str__(self):
@@ -29,14 +30,29 @@ class Card(models.Model):
         Update card's review status based on the easiness score (0-5).
         Easiness factor and interval are adjusted accordingly.
         """
-        if easiness < 3:
-            self.interval = 1 #Start again from 1 day
+
+        easiness_map = {
+            'again': 0,
+            'hard': 1,
+            'good': 2,
+            'easy': 3
+        }
+        easiness_value = easiness_map.get(easiness)
+
+        if easiness_value is None:
+            return
+
+        print(f'Easiness value: {easiness_value}')
+
+        if easiness_value == 0:
+            self.repetitions = 0
+            self.interval = 1
             self.easiness_factor = 2.5
-            self.need_relearn = True
         else:
+            self.repetitions += 1
             self.update_interval()
-            self.update_easiness_factor(easiness)
-        # Update the next review date
+            self.update_easiness_factor(easiness_value)
+        
         self.next_review_date = timezone.now() + timedelta(days=self.interval)
         self.reviewed_date = timezone.now()
         self.save()
@@ -50,13 +66,15 @@ class Card(models.Model):
         else:
             self.interval = int(self.interval * self.easiness_factor)
     
-    def update_easiness_factor(self, easiness):
+    def update_easiness_factor(self, easiness_value):
         """
         Update the easiness factor (EF) based on the quality of the answer.
-        The minimum EF is 1.3 to avoid too slow learning.
+        Easiness (easy, good, hard, again) affects EF. Minimum EF is 1.3.
         """
-        new_ef = self.easiness_factor + (0.1 - (5 - easiness) * (0.08 + (5 - easiness) * 0.02))
-        self.easiness_factor = max(new_ef, 1.3)
+        quality_map = {0: -0.8, 1: -0.3, 2: 0, 3: 0.2}
+        delta = quality_map.get(easiness_value, 0)
+        new_ef = self.easiness_factor + delta
+        self.easiness_factor = max(1.3, new_ef) 
 
     @property # defines methods in a class that can be accessed like attributes 
     def needs_review(self):
