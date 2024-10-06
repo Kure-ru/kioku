@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Divider, Flex, Modal, Paper, Text, Notification, Title, Stack } from "@mantine/core"
+import { ActionIcon, Button, Divider, Flex, Modal, Paper, Text, Notification, Title, Stack, useMantineTheme } from "@mantine/core"
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { IoSettingsSharp } from "react-icons/io5";
@@ -16,6 +16,10 @@ const CardPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [opened, { open, close }] = useDisclosure(false);
+    const theme = useMantineTheme();
+
+
+    console.log(cards);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -93,8 +97,8 @@ const CardPage = () => {
         <>
             <Link style={{ textDecoration: 'none' }} to={`/deck/${deck?.id}`}><Title order={3}>{deck?.name}</Title></Link>
             {cards.length > 0 ? (
-                <GlassPaper>
-                    <Stack >
+                <GlassPaper style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Stack style={{ flexGrow: 1 }}>
                         <Text>{cards[currentCardIndex].question}</Text>
                         <Divider my="lg" label={<Button onClick={() => setShowAnswer(true)}>show answer</Button>}
                         />
@@ -105,24 +109,28 @@ const CardPage = () => {
                             align="flex-start"
                             direction="row"
                             wrap="wrap">
-                            <Button onClick={handleCardAnswer}>again</Button>
-                            <Button onClick={handleCardAnswer}>hard</Button>
+                            <Button color="red" onClick={handleCardAnswer}>again</Button>
+                            <Button color="orange" onClick={handleCardAnswer}>hard</Button>
                             <Button onClick={handleCardAnswer}>good</Button>
-                            <Button onClick={handleCardAnswer}>easy</Button>
+                            <Button color="green" onClick={handleCardAnswer}>easy</Button>
                         </Flex>
                     </Stack>
-                    <ActionIcon onClick={open} variant="filled" aria-label="Card settings"><IoSettingsSharp /></ActionIcon>
+                    <Flex gap={16}>
+                        <Text c={theme.colors.indigo[9]} fw={700}>{cards.length} card(s) left</Text>
+                        <ActionIcon onClick={open} variant="filled" aria-label="Card settings"><IoSettingsSharp /></ActionIcon>
+                    </Flex>
                     <Modal opened={opened} onClose={close} title="Cards settings">
                         <CardForm id={Number(id)} card={cards[currentCardIndex]} closeModal={close} />
                     </Modal>
-                </GlassPaper>
+                </GlassPaper >
             ) : (
                 <Paper>
                     <Text>No cards available.</Text>
                     <Button component="a" href={`/deck/${id}/new`}>Add new card</Button>
                 </Paper>
             )}
-            {notification &&
+            {
+                notification &&
                 <Notification
                     mt={64}
                     color={notification.color}
