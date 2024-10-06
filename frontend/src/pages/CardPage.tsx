@@ -1,10 +1,11 @@
-import { ActionIcon, Button, Container, Divider, Flex, Modal, Paper, Text, Notification, Title, Stack } from "@mantine/core"
+import { ActionIcon, Button, Divider, Flex, Modal, Paper, Text, Notification, Title, Stack } from "@mantine/core"
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { IoSettingsSharp } from "react-icons/io5";
 import { useDisclosure } from "@mantine/hooks";
 import CardForm from "../Components/CardForm";
 import { Card, Deck } from "../Types";
+import GlassPaper from "../Components/GlassPaper";
 
 const CardPage = () => {
     const [cards, setCards] = useState<Card[]>([]);
@@ -89,10 +90,10 @@ const CardPage = () => {
     }
 
     return (
-        <Container>
+        <>
             <Link style={{ textDecoration: 'none' }} to={`/deck/${deck?.id}`}><Title order={3}>{deck?.name}</Title></Link>
             {cards.length > 0 ? (
-                <Flex my={40}>
+                <GlassPaper>
                     <Stack >
                         <Text>{cards[currentCardIndex].question}</Text>
                         <Divider my="lg" label={<Button onClick={() => setShowAnswer(true)}>show answer</Button>}
@@ -114,7 +115,7 @@ const CardPage = () => {
                     <Modal opened={opened} onClose={close} title="Cards settings">
                         <CardForm id={Number(id)} card={cards[currentCardIndex]} closeModal={close} />
                     </Modal>
-                </Flex>
+                </GlassPaper>
             ) : (
                 <Paper>
                     <Text>No cards available.</Text>
@@ -131,7 +132,7 @@ const CardPage = () => {
                     {notification.message}
                 </Notification>
             }
-        </Container>
+        </>
     )
 }
 

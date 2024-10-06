@@ -138,14 +138,7 @@ const BrowsePage = () => {
     const paginatedCards = sortedCards?.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
     const rows = paginatedCards?.map((card) => (
-        <Table.Tr key={card.id} onClick={() => handleRowClick(card)} style={{
-            cursor: "pointer",
-            height: '50px',
-            maxHeight: '50px',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-        }}>
+        <Table.Tr key={card.id} onClick={() => handleRowClick(card)} style={{ cursor: "pointer" }}>
             <Table.Td>{card.question}</Table.Td>
             <Table.Td>{getDeckNameById(card.deck)}</Table.Td>
             <Table.Td>{formatDate(card.next_review_date)}</Table.Td>
@@ -156,45 +149,37 @@ const BrowsePage = () => {
     const totalPages = Math.ceil((cards?.length || 0) / rowsPerPage);
 
     return (
-        <Grid>
-            <Grid.Col span={7}>
-                <GlassPaper>
-                    <ScrollArea>
-                        <TextInput
-                            placeholder="Search by any field"
-                            mb="md"
-                            leftSection={<IoSearch style={{ width: rem(16), height: rem(16) }} />}
-                            value={search}
-                            onChange={handleSearchChange}
-                        />
-                        <Table style={{ backgroundColor: '#fff' }} striped highlightOnHover highlightOnHoverColor='var(--mantine-color-indigo-2)' stripedColor='var(--mantine-color-indigo-1)' withRowBorders={false}>
-                            <Table.Thead>
-                                <Table.Tr>
-                                    <Th sorted={sortBy === 'question'} reversed={reverseSortDirection} onSort={() => setSorting('question')}>
-                                        Question
-                                    </Th>
-                                    <Th sorted={sortBy === 'deck'} reversed={reverseSortDirection} onSort={() => setSorting('deck')}>
-                                        Deck
-                                    </Th>
-                                    <Th sorted={sortBy === 'next_review_date'} reversed={reverseSortDirection} onSort={() => setSorting('next_review_date')}>
-                                        Due
-                                    </Th>
-                                    <Th sorted={sortBy === 'creation_date'} reversed={reverseSortDirection} onSort={() => setSorting('creation_date')}>
-                                        Created
-                                    </Th>
-                                </Table.Tr>
-                            </Table.Thead>
-                            <Table.Tbody >
-                                {rows}</Table.Tbody>
-                        </Table>
-                        <Pagination pt='8' onChange={setCurrentPage} value={currentPage} total={totalPages} withEdges />
-                    </ScrollArea>
-                </GlassPaper>
-            </Grid.Col>
-            <Grid.Col span={5}>
-                {selectedCard && <GlassPaper><CardForm key={selectedCard.id} id={selectedCard.deck} card={selectedCard} onUpdate={handleUpdateCard} /></GlassPaper>}
-            </Grid.Col>
-        </Grid >
+        <GlassPaper>
+            <ScrollArea>
+                <TextInput
+                    placeholder="Search by any field"
+                    mb="md"
+                    leftSection={<IoSearch style={{ width: rem(16), height: rem(16) }} />}
+                    value={search}
+                    onChange={handleSearchChange}
+                />
+                <Table style={{ backgroundColor: '#fff' }} striped highlightOnHover highlightOnHoverColor='var(--mantine-color-indigo-2)' stripedColor='var(--mantine-color-indigo-1)' withRowBorders={false}>
+                    <Table.Thead>
+                        <Table.Tr>
+                            <Th sorted={sortBy === 'question'} reversed={reverseSortDirection} onSort={() => setSorting('question')}>
+                                Question
+                            </Th>
+                            <Th sorted={sortBy === 'deck'} reversed={reverseSortDirection} onSort={() => setSorting('deck')}>
+                                Deck
+                            </Th>
+                            <Th sorted={sortBy === 'next_review_date'} reversed={reverseSortDirection} onSort={() => setSorting('next_review_date')}>
+                                Due
+                            </Th>
+                            <Th sorted={sortBy === 'creation_date'} reversed={reverseSortDirection} onSort={() => setSorting('creation_date')}>
+                                Created
+                            </Th>
+                        </Table.Tr>
+                    </Table.Thead>
+                    <Table.Tbody style={{ textOverflow: 'ellipsis' }}>{rows}</Table.Tbody>
+                </Table>
+                <Pagination pt='8' onChange={setCurrentPage} value={currentPage} total={totalPages} withEdges />
+            </ScrollArea>
+        </GlassPaper>
     )
 }
 

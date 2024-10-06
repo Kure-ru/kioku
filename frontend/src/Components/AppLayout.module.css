@@ -13,6 +13,16 @@
   align-items: center;
 }
 
+.main {
+  background: linear-gradient(
+    135deg,
+    rgba(219, 228, 255, 1) 20%,
+    rgba(229, 153, 247, 1) 35%,
+    rgba(145, 167, 255, 1) 51%,
+    rgba(219, 228, 255, 1) 78%
+  );
+}
+
 .link {
   display: block;
   line-height: 1;
@@ -31,7 +41,7 @@
   }
 
   [data-mantine-color-scheme] &[data-active] {
-    background-color: var(--mantine-color-blue-filled);
+    background-color: var(--mantine-color-indigo-filled);
     color: var(--mantine-color-white);
   }
 }

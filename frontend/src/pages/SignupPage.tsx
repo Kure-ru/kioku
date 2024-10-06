@@ -2,6 +2,7 @@ import { Group, Title, Text, Button, TextInput, Stack, PasswordInput } from "@ma
 import { useForm } from "@mantine/form";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import GlassPaper from "../Components/GlassPaper";
 
 interface formValues {
     username: string;
@@ -70,42 +71,44 @@ const SignupPage = () => {
     }
 
     return (
-        <Stack>
-            <Title>Signup</Title>
-            <Text>Start learning now</Text>
+        <GlassPaper>
+            <Stack>
+                <Title>Signup</Title>
+                <Text>Start learning now</Text>
 
-            <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
-                <TextInput
-                    withAsterisk
-                    label="Username"
-                    key={form.key('username')}
-                    {...form.getInputProps('username')}
-                />
-                <TextInput
-                    withAsterisk
-                    label="Email"
-                    key={form.key('email')}
-                    {...form.getInputProps('email')}
-                />
+                <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
+                    <TextInput
+                        withAsterisk
+                        label="Username"
+                        key={form.key('username')}
+                        {...form.getInputProps('username')}
+                    />
+                    <TextInput
+                        withAsterisk
+                        label="Email"
+                        key={form.key('email')}
+                        {...form.getInputProps('email')}
+                    />
 
-                <PasswordInput
-                    label="Password"
-                    key={form.key('password')}
-                    {...form.getInputProps('password')}
-                />
+                    <PasswordInput
+                        label="Password"
+                        key={form.key('password')}
+                        {...form.getInputProps('password')}
+                    />
 
-                <PasswordInput
-                    label="Confirm password"
-                    key={form.key('confirmPassword')}
-                    {...form.getInputProps('confirmPassword')}
-                />
-                <Group justify="flex-end" mt="md">
-                    <Button type="submit">Submit</Button>
-                </Group>
-                {error && <Text c="red">{error}</Text>}
-            </form>
-            <Text>Already have an account? <Link to={'/login'}>Login</Link></Text>
-        </Stack>
+                    <PasswordInput
+                        label="Confirm password"
+                        key={form.key('confirmPassword')}
+                        {...form.getInputProps('confirmPassword')}
+                    />
+                    <Group justify="flex-end" mt="md">
+                        <Button type="submit">Submit</Button>
+                    </Group>
+                    {error && <Text c="red">{error}</Text>}
+                </form>
+                <Text>Already have an account? <Link to={'/login'}>Login</Link></Text>
+            </Stack>
+        </GlassPaper>
     )
 }
 

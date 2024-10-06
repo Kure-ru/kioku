@@ -68,7 +68,7 @@ const Layout = () => {
                     <Burger opened={opened} onClick={toggle} hiddenFrom="xs" size="sm" />
                 </Container>
             </AppShell.Header>
-            <AppShell.Main>
+            <AppShell.Main className={classes.main}>
                 <Outlet />
             </AppShell.Main>
         </AppShell>
