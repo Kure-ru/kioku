@@ -3,7 +3,9 @@ from rest_framework import permissions, viewsets, status, generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
-from django.db.models import Q 
+from django.db.models import Q, Count
+from django.db.models.functions import TruncDate
+from flashcards import models
 from flashcards.models import Card, Deck
 from flashcards.serializers import (
     AnswerCardSerializer,
@@ -14,6 +16,7 @@ from flashcards.serializers import (
 )
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from datetime import timedelta
 
 
 class CardViewSet(viewsets.ModelViewSet):
@@ -108,3 +111,20 @@ class RegisterView(APIView):
                 "username": user.username,
                 "email": user.email
             }, status=status.HTTP_201_CREATED)
+    
+class StudyDaysHeatmapView(APIView):
+    def get(self, request):
+        user = request.user
+        today = timezone.now().date()
+        start_date = today - timedelta(days=30)
+
+        reviews = (Card.objects.filter(deck__user=user, reviewed_date__date__gte=start_date)
+                               .annotate(date=TruncDate('reviewed_date'))
+                               .values('date')
+                               .annotate(count=Count('id'))
+                               .order_by('date')
+                               )
+        data = [{'date': review['date'], 'count': review['count']} for review in reviews]
+        return Response(data)
+    
+    

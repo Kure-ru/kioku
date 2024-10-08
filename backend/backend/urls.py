@@ -19,4 +19,5 @@ urlpatterns = [
     path('api/register/', views.RegisterView.as_view(), name='register'),
     path('api/decks/<int:deck_id>/cards/', views.CardsByDeckView.as_view(), name='deck-cards'),
     path('api/cards/<int:pk>/answer/', views.CardViewSet.as_view({'post': 'answer_card'}), name='card-answer'),
+    path('stats/study-days-heatmap/', views.StudyDaysHeatmapView.as_view(), name='study-days-heatmap'),
 ]
