@@ -42,8 +42,6 @@ class Card(models.Model):
         if easiness_value is None:
             return
 
-        print(f'Easiness value: {easiness_value}')
-
         if easiness_value == 0:
             self.repetitions = 0
             self.interval = 1
@@ -86,5 +84,16 @@ class Card(models.Model):
             return True
         return timezone.now() >= self.next_review_date
 
+    @property
+    def card_status(self):
+        """
+        Determine the status of the card: new, young, or mature.
+        """
+        if self.repetitions == 0:
+            return "new"
+        elif self.repetitions < 5:
+            return "young"
+        else:
+            return "mature"
 
          

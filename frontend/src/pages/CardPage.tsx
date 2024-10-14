@@ -18,9 +18,6 @@ const CardPage = () => {
     const [opened, { open, close }] = useDisclosure(false);
     const theme = useMantineTheme();
 
-
-    console.log(cards);
-
     useEffect(() => {
         const fetchData = async () => {
             const token = localStorage.getItem('accessToken');

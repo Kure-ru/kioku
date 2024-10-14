@@ -41,3 +41,16 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(validated_data['username'], validated_data['email'], validated_data['password'])
         return user
+    
+class ReviewCountSerializer(serializers.Serializer):
+    date = serializers.DateField()
+    count = serializers.IntegerField()
+
+class CardStatusSerializer(serializers.Serializer):
+    new = serializers.IntegerField()
+    young = serializers.IntegerField()
+    mature = serializers.IntegerField()
+
+class ReviewDueSerializer(serializers.Serializer):
+    date = serializers.DateField()
+    due_count = serializers.IntegerField()

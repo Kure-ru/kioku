@@ -7,6 +7,7 @@ import AddCardPage from "./pages/AddCardPage.tsx";
 import SignupPage from "./pages/SignupPage.tsx";
 import Layout from './Components/AppLayout.tsx';
 import BrowsePage from './pages/BrowsePage.tsx';
+import StatsPage from './pages/StatsPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,7 @@ const router = createBrowserRouter([
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
       { path: 'browse', element: <BrowsePage /> },
+      { path: 'stats', element: <StatsPage /> },
     ],
   },
 ]);
