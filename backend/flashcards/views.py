@@ -1,3 +1,4 @@
+from collections import defaultdict
 from django.utils import timezone
 from rest_framework import permissions, viewsets, status, generics
 from rest_framework.permissions import IsAuthenticated
@@ -127,4 +128,48 @@ class StudyDaysHeatmapView(APIView):
         data = [{'date': review['date'], 'count': review['count']} for review in reviews]
         return Response(data)
     
-    
+class StatsView(APIView):
+    """
+    API endpoint to retrieve stats: daily reviews, card statuses, and running total.
+    """
+    def get(self, request):
+        user = request.user
+        today = timezone.now().date()
+        start_date = today - timedelta(days=30)
+
+        daily_reviews = (Card.objects.filter(deck__user=user, reviewed_date__gte=start_date)
+                         .annotate(date=TruncDate('reviewed_date'))
+                         .values('date')
+                         .annotate(count=Count('id'))
+                         .order_by('date'))
+
+        daily_reviews_map = defaultdict(int)
+        for entry in daily_reviews:
+            daily_reviews_map[entry['date']] = entry['count']
+        
+        combined_data = []
+        card_statuses_map = defaultdict(lambda: {'new': 0, 'young': 0, 'mature': 0})
+
+        for day in range(30):
+            current_date = today - timedelta(days=day)
+
+            new_cards_count = Card.objects.filter(deck__user=user, reviewed_date__date=current_date, repetitions=0).count()
+            young_cards_count = Card.objects.filter(deck__user=user, reviewed_date__date=current_date, repetitions__gt=0, repetitions__lt=5).count()
+            mature_cards_count = Card.objects.filter(deck__user=user, reviewed_date__date=current_date, repetitions__gte=5).count()
+
+            card_statuses_map[current_date]['new'] += new_cards_count
+            card_statuses_map[current_date]['young'] += young_cards_count
+            card_statuses_map[current_date]['mature'] += mature_cards_count
+
+            review_count = daily_reviews_map.get(current_date, 0)
+
+            combined_data.append({
+                'date': current_date,
+                'learning': review_count,
+                'new': card_statuses_map[current_date]['new'],  
+                'young': card_statuses_map[current_date]['young'],
+                'mature': card_statuses_map[current_date]['mature'],
+            })   
+
+        combined_data = sorted(combined_data, key=lambda x: x['date'])
+        return Response(combined_data)
