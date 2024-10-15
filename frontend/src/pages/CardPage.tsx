@@ -69,8 +69,24 @@ const CardPage = () => {
 
             if (!response.ok) throw new Error('Failed to submit answer.');
 
-            const updatedCard = await response.json();
-            console.log(updatedCard);
+            const responseData = await response.json();
+            const updatedCard = responseData.updated_card;
+            const nextCard = responseData.next_card;
+
+            setCards((prevCards) => {
+                const updatedCards = [...prevCards];
+                updatedCards[currentCardIndex] = updatedCard;
+
+                if (rating === 'again') {
+                    updatedCards.push(updatedCard);
+                }
+
+                if (nextCard) {
+                    updatedCard[currentCardIndex] = nextCard;
+                }
+
+                return updatedCards;
+            })
 
             setCurrentCardIndex((prevIndex) => {
                 const nextIndex = prevIndex + 1;

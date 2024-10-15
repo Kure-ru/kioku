@@ -6,7 +6,6 @@ from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from django.db.models import Q, Count
 from django.db.models.functions import TruncDate
-from flashcards import models
 from flashcards.models import Card, Deck
 from flashcards.serializers import (
     AnswerCardSerializer,
@@ -18,7 +17,7 @@ from flashcards.serializers import (
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from datetime import timedelta
-
+from .utils import StudySessionManager
 
 class CardViewSet(viewsets.ModelViewSet):
     """
@@ -37,8 +36,28 @@ class CardViewSet(viewsets.ModelViewSet):
         serializer = AnswerCardSerializer(data=request.data)
 
         if serializer.is_valid():
+            answer_type = serializer.validated_data.get('easiness')
             updated_card = serializer.update(card, serializer.validated_data)
-            return Response(CardSerializer(updated_card).data, status=status.HTTP_200_OK)
+
+            # Manage the study session queue
+            session_manager = StudySessionManager(user_id=request.user.id)
+
+            if answer_type == 'again':
+                session_manager.reinsert_card(card.id)
+            
+            next_card_id = session_manager.get_next_card()
+            if next_card_id:
+                next_card = Card.objects.get(id=next_card_id)
+                next_card_data = CardSerializer(next_card).data
+            else:
+                next_card_data = None
+
+            response_data = {
+                'updated_card': CardSerializer(updated_card).data,
+                'next_card': next_card_data,
+            }            
+            return Response(response_data, status=status.HTTP_200_OK)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request, *args, **kwargs):
