@@ -1,6 +1,6 @@
 import { ActionIcon, Button, Divider, Flex, Modal, Paper, Text, Notification, Title, Stack, useMantineTheme } from "@mantine/core"
-import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { IoSettingsSharp } from "react-icons/io5";
 import { useDisclosure } from "@mantine/hooks";
 import CardForm from "../Components/CardForm";
@@ -14,39 +14,39 @@ const CardPage = () => {
     const [notification, setNotification] = useState<{ message: string; color: string } | null>(null);
     const [showAnswer, setShowAnswer] = useState<boolean>(false);
     const { id } = useParams();
-    const navigate = useNavigate();
     const [opened, { open, close }] = useDisclosure(false);
     const theme = useMantineTheme();
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const token = localStorage.getItem('accessToken');
-            try {
-                const [cardsResponse, deckResponse] = await Promise.all([
-                    fetch(`http://127.0.0.1:8000/api/decks/${id}/cards/?review=true`, {
-                        method: 'GET',
-                        headers: { 'Authorization': `Bearer ${token}` },
-                    }),
-                    fetch(`http://127.0.0.1:8000/decks/${id}`, {
-                        method: 'GET',
-                        headers: { 'Authorization': `Bearer ${token}` },
-                    }),
-                ]);
+    const fetchData = useCallback(async () => {
+        const token = localStorage.getItem('accessToken');
+        try {
+            const [cardsResponse, deckResponse] = await Promise.all([
+                fetch(`http://127.0.0.1:8000/api/decks/${id}/cards/?review=true`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                }),
+                fetch(`http://127.0.0.1:8000/decks/${id}`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                }),
+            ]);
 
-                if (!cardsResponse.ok || !deckResponse.ok) throw new Error('Failed to fetch data.')
+            if (!cardsResponse.ok || !deckResponse.ok) throw new Error('Failed to fetch data.')
 
-                const cardsData = await cardsResponse.json();
-                const deckData = await deckResponse.json();
+            const cardsData = await cardsResponse.json();
+            const deckData = await deckResponse.json();
 
-                setCards(cardsData);
-                setDeck(deckData);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                handleError(error as Error);
-            }
+            setCards(cardsData);
+            setDeck(deckData);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            handleError(error as Error);
         }
+    }, [id])
+
+    useEffect(() => {
         fetchData();
-    }, [id, navigate])
+    }, [fetchData]);
 
     const handleError = (error: Error) => {
         console.error(error);
@@ -55,6 +55,9 @@ const CardPage = () => {
 
     const handleCardAnswer = async (e: React.MouseEvent<HTMLButtonElement>) => {
         const rating = e.currentTarget.textContent;
+
+        if (!rating) return;
+
         const token = localStorage.getItem('accessToken');
 
         try {
@@ -69,38 +72,33 @@ const CardPage = () => {
 
             if (!response.ok) throw new Error('Failed to submit answer.');
 
-            const responseData = await response.json();
-            const updatedCard = responseData.updated_card;
-            const nextCard = responseData.next_card;
-
-            setCards((prevCards) => {
-                const updatedCards = [...prevCards];
-                updatedCards[currentCardIndex] = updatedCard;
-
-                if (rating === 'again') {
-                    updatedCards.push(updatedCard);
-                }
-
-                if (nextCard) {
-                    updatedCard[currentCardIndex] = nextCard;
-                }
-
-                return updatedCards;
-            })
-
-            setCurrentCardIndex((prevIndex) => {
-                const nextIndex = prevIndex + 1;
-                if (nextIndex < cards.length) {
-                    return nextIndex;
-                } else {
-                    return cards.length;
-                }
-            });
+            const { updated_card } = await response.json();
+            updateCardsAfterAnswer(updated_card, rating);
             setShowAnswer(false);
         } catch (error) {
             console.error('Error answering the card:', error);
         }
     };
+
+    const updateCardsAfterAnswer = (updatedCard: Card, rating: string) => {
+        setCards((prevCards) => {
+            const updatedCards = [...prevCards];
+            updatedCards[currentCardIndex] = updatedCard;
+
+            if (rating !== 'again') {
+                updatedCards.splice(currentCardIndex, 1);
+            }
+            console.log(updatedCard)
+            return updatedCards;
+        })
+
+        setCurrentCardIndex((prevIndex) => {
+            if (cards.length <= 1) {
+                return 0;
+            }
+            return Math.min(prevIndex, cards.length - 2);
+        });
+    }
 
     if (currentCardIndex >= cards.length) {
         return <Text>No more cards available. You've completed this deck!</Text>
@@ -129,7 +127,7 @@ const CardPage = () => {
                         </Flex>
                     </Stack>
                     <Flex gap={16}>
-                        <Text c={theme.colors.indigo[9]} fw={700}>{cards.length} card(s) left</Text>
+                        <Text c={theme.colors.indigo[9]} fw={700}>{cards.length - currentCardIndex} card(s) left</Text>
                         <ActionIcon onClick={open} variant="filled" aria-label="Card settings"><IoSettingsSharp /></ActionIcon>
                     </Flex>
                     <Modal opened={opened} onClose={close} title="Cards settings">
