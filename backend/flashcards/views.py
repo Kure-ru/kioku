@@ -27,6 +27,9 @@ class CardViewSet(viewsets.ModelViewSet):
     serializer_class = CardSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        return Card.objects.filter(deck__user=self.request.user)
+
     @action(detail=True, methods=['post'], url_path='answer')
     def answer_card(self, request, pk=None):
         """
